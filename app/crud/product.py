@@ -45,4 +45,4 @@ def delete_product(db: Session, product_id: int):
         raise HTTPException(status_code=404,detail=f"Product with product id {product_id} not found")
     db.delete(db_product)
     db.commit()
-    return db_product
+   
