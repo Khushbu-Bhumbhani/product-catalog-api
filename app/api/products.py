@@ -23,6 +23,8 @@ def get_products_route(
     min_price: float | None = None,
     max_price: float | None = None,
     search: str | None = None,
+    sort_by: str | None = None,
+    order: str | None = 'asc',
     db: Session = Depends(get_db),
 ):
     return get_products(
@@ -32,7 +34,9 @@ def get_products_route(
         category=category,
         min_price=min_price,
         max_price=max_price,
-        search=search
+        search=search,
+        sort_by=sort_by,
+        order=order
     )
 
 

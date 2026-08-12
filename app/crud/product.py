@@ -20,8 +20,15 @@ def get_products(
     min_price: float | None = None,
     max_price: float | None = None,
     search: str | None = None,
+    sort_by: str | None = None,
+    order: str | None = None,
 ):
     offset = (page - 1) * limit
+    sort_columns = {
+        "name": Product.name,
+        "price": Product.price,
+        "quantity": Product.quantity,
+    }
     # products = db.query(Product).offset(offset).limit(limit).all()
     query = db.query(Product)
     if category is not None:
@@ -32,6 +39,22 @@ def get_products(
         query = query.filter(Product.price <= max_price)
     if search is not None:
         query = query.filter(Product.name.ilike(f"%{search}%"))
+
+    if sort_by is not None:
+        sort_column = sort_columns.get(sort_by)
+        if sort_column is None:
+            raise HTTPException(
+                status_code=400, detail=f"Invalid sort field: {sort_by}"
+            )
+        if order is not None:
+            if order not in ('asc','desc'):
+                raise HTTPException(status_code=400,
+                                    detail=f"Invalid order field: {order}")
+            if order == 'asc':
+                query = query.order_by(sort_column.asc())
+            elif order == 'desc':
+                query = query.order_by(sort_column.desc())
+                        
     products = query.offset(offset).limit(limit).all()
     return products
 
