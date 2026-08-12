@@ -19,6 +19,7 @@ def get_products(
     category: str | None = None,
     min_price: float | None = None,
     max_price: float | None = None,
+    search: str | None = None,
 ):
     offset = (page - 1) * limit
     # products = db.query(Product).offset(offset).limit(limit).all()
@@ -29,7 +30,8 @@ def get_products(
         query = query.filter(Product.price >= min_price)
     if max_price is not None:
         query = query.filter(Product.price <= max_price)
-
+    if search is not None:
+        query = query.filter(Product.name.ilike(f"%{search}%"))
     products = query.offset(offset).limit(limit).all()
     return products
 
