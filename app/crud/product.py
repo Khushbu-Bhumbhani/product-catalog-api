@@ -12,9 +12,25 @@ def create_product(db: Session, product: ProductCreate):
     return db_product
 
 
-def get_products(db: Session, page: int, limit: int):
+def get_products(
+    db: Session,
+    page: int,
+    limit: int,
+    category: str | None = None,
+    min_price: float | None = None,
+    max_price: float | None = None,
+):
     offset = (page - 1) * limit
-    products = db.query(Product).offset(offset).limit(limit).all()
+    # products = db.query(Product).offset(offset).limit(limit).all()
+    query = db.query(Product)
+    if category is not None:
+        query = query.filter(Product.category.ilike(category))
+    if min_price is not None:
+        query = query.filter(Product.price >= min_price)
+    if max_price is not None:
+        query = query.filter(Product.price <= max_price)
+
+    products = query.offset(offset).limit(limit).all()
     return products
 
 

@@ -16,8 +16,22 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[ProductResponse])
-def get_products_route(page: int = Query(default=1,ge=1), limit: int =Query(default=10, ge=1,le=100), db: Session = Depends(get_db)):
-    return get_products(db=db,page=page,limit=limit)
+def get_products_route(
+    page: int = Query(default=1, ge=1),
+    limit: int = Query(default=10, ge=1, le=100),
+    category: str | None = None,
+    min_price: float | None = None,
+    max_price: float | None = None,
+    db: Session = Depends(get_db),
+):
+    return get_products(
+        db=db,
+        page=page,
+        limit=limit,
+        category=category,
+        min_price=min_price,
+        max_price=max_price,
+    )
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
@@ -39,4 +53,4 @@ def update_product_route(
 
 @router.delete("/{product_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_product_route(product_id: int, db: Session = Depends(get_db)):
-   delete_product(db=db,product_id=product_id)
+    delete_product(db=db, product_id=product_id)
