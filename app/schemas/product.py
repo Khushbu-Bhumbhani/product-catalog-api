@@ -11,6 +11,7 @@ class ProductCreate(BaseModel):
     category: str | None = Field(
         default=None, max_length=50, description="Product Category"
     )
+    brand: str | None = Field(default=None, description="Product brand name")
 
 
 class ProductUpdate(BaseModel):
@@ -27,7 +28,7 @@ class ProductUpdate(BaseModel):
     category: str | None = Field(
         default=None, max_length=50, description="Product Category"
     )
-
+    brand: str | None = Field(default=None, description="Product brand name")
 
 class ProductResponse(ProductCreate):
     id: int
