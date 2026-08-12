@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from app.schemas.product import ProductCreate, ProductResponse
 from sqlalchemy.orm import Session
 from fastapi.responses import Response
@@ -16,8 +16,8 @@ router = APIRouter()
 
 
 @router.get("/", response_model=list[ProductResponse])
-def get_products_route(db: Session = Depends(get_db)):
-    return get_products(db)
+def get_products_route(page: int = Query(default=1,ge=1), limit: int =Query(default=10, ge=1,le=100), db: Session = Depends(get_db)):
+    return get_products(db=db,page=page,limit=limit)
 
 
 @router.get("/{product_id}", response_model=ProductResponse)
