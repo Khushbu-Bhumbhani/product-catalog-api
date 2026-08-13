@@ -11,7 +11,7 @@ class Product(Base):
     name: Mapped[str] = mapped_column(String(100))
     price: Mapped[float] = mapped_column(Float)
     quantity: Mapped[int] = mapped_column()
-    brand: Mapped[str] = mapped_column(String(150), nullable=True)
+    brand: Mapped[str | None] = mapped_column(String(150), nullable=True)
     description: Mapped[str | None] = mapped_column(
         String(500), nullable=True, default=None
     )
