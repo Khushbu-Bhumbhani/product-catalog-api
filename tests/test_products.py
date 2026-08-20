@@ -89,6 +89,105 @@ def test_create_product():
     assert data["brand"] == "Logitech"
     assert data["price"] == 50.0
     assert data["quantity"] == 20
+   
+def test_get_product(db):
+    product = Product(
+        name="Test Keyboard",
+        price=75.0,
+        quantity=10,
+        description="Test Gaming Keyboard",
+        category="electronics",
+    ) 
+    db.add(product)
+    db.commit()
+    db.refresh(product)
     
-
+    product_id = product.id
+    
+    response = client.get(f"/products/{product_id}")
+    
+    assert response.status_code == 200
+    
+    data = response.json()
+    
+    assert data["id"] == product_id
+    assert data["name"] == "Test Keyboard"
+    assert data["category"] == "electronics"
+    
+def test_get_product_not_found(db):
+    resonse = client.get("/products/9999")
+    
+    assert resonse.status_code == 404
+    
+    data = resonse.json()
+    
+    data["detail"] == "Product with product id 9999 not found"  
+    
+def test_product_update(db):
+    product = Product(
+        name="Test Keyboard",
+        price=75.0,
+        quantity=10,
+        description="Test Gaming Keyboard",
+        category="electronics",
+    )
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+    
+    product_id = product.id
+    update_data = {
+        "price": 90.0,
+        "quantity": 5
+    }
+    response = client.put(f"/products/{product_id}", json= update_data)
+    
+    assert response.status_code == 200
+    
+    data = response.json()
+    
+    assert data["id"] == product_id
+    assert data["price"] == 90.0
+    assert data["quantity"] == 5
+    assert data["name"] == "Test Keyboard"
+    
+def test_update_product_not_found(db):
+    update_data = {
+            "price": 90.0,
+            "quantity": 5
+        }
+    response = client.put(f"/products/9999", json= update_data)
         
+    assert response.status_code == 404
+        
+    data = response.json()
+    assert data["detail"] == "Product with product id 9999 not found"  
+    
+def test_delete_product(db):
+    product = Product(
+        name="Test Keyboard",
+        price=75.0,
+        quantity=10,
+        description="Test Gaming Keyboard",
+        category="electronics",
+    )
+
+    db.add(product)
+    db.commit()
+    db.refresh(product)
+
+    product_id = product.id
+    
+    response = client.delete(f"/products/{product_id}")
+    
+    assert response.status_code == 204
+    assert response.content == b""
+    
+def test_delete_product_not_founc(db):
+    response = client.delete("/products/9999")
+     
+    assert response.status_code == 404
+
+    data = response.json()
+
+    assert data["detail"] == "Product with product id 9999 not found" 
