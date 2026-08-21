@@ -21,7 +21,7 @@ def get_products(
     max_price: float | None = None,
     search: str | None = None,
     sort_by: str | None = None,
-    order: str | None = None,
+    order: str = 'asc',
 ):
     offset = (page - 1) * limit
     sort_columns = {
@@ -46,14 +46,16 @@ def get_products(
             raise HTTPException(
                 status_code=400, detail=f"Invalid sort field: {sort_by}"
             )
-        if order is not None:
-            if order not in ('asc','desc'):
-                raise HTTPException(status_code=400,
-                                    detail=f"Invalid order field: {order}")
-            if order == 'asc':
-                query = query.order_by(sort_column.asc())
-            elif order == 'desc':
-                query = query.order_by(sort_column.desc())
+        if order not in ("asc", "desc"):
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid order field: {order}"
+            )
+           
+        if order == 'asc':
+            query = query.order_by(sort_column.asc())
+        elif order == 'desc':
+            query = query.order_by(sort_column.desc())
                         
     products = query.offset(offset).limit(limit).all()
     return products
@@ -63,7 +65,7 @@ def get_product(db: Session, product_id: int):
     product = db.query(Product).filter(Product.id == product_id).first()
     if product is None:
         raise HTTPException(
-            status_code=404, detail=f"Product with product id {product_id} not found"
+            status_code=404, detail=f"Product with product id {product_id} c"
         )
     return product
 
